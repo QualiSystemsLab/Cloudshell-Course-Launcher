@@ -16,9 +16,7 @@ def sb_print(api, reservation_id, message):
 
 
 def _html_wrap(content, color, elm):
-    return "<{elm} style='color: {color}'>{content}</{elm}>".format(content=content,
-                                                                    elm=elm,
-                                                                    color=color)
+    return "<{elm} style='color: {color}'>{content}</{elm}>".format(content=content, elm=elm, color=color)
 
 
 def sb_html_print(api, reservation_id, message, txt_color="white", html_elm="span"):
@@ -81,14 +79,15 @@ def sb_link_print(api, reservation_id, url, text):
     :param str text: the link text to be displayed
     :return:
     """
+
     def html_link_wrap(target_url, link_text):
         return """<a href={url} 
                style="text-decoration: underline"
                target = "_blank"
                rel = "noopener noreferrer"
-               >{link_text}</a>""".format(url=target_url, link_text=link_text)
+               >{link_text}</a>""".format(
+            url=target_url, link_text=link_text
+        )
 
     wrapped_link = html_link_wrap(url, text)
     sb_print(api, reservation_id, wrapped_link)
-
-

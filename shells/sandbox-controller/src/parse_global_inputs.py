@@ -11,8 +11,7 @@ def _get_global_input_request(key_value_input_str):
     cleaned = [s.strip() for s in split]
     if len(cleaned) > 2:
         raise Exception("Parsed Key-pair is greater than 2")
-    return UpdateTopologyGlobalInputsRequest(ParamName=cleaned[0],
-                                             Value=cleaned[1])
+    return UpdateTopologyGlobalInputsRequest(ParamName=cleaned[0], Value=cleaned[1])
 
 
 def get_global_input_request_from_semicolon_sep_str(input_str):

@@ -1,13 +1,14 @@
-from cloudshell.workflow.orchestration.sandbox import Sandbox
+import time
+
 import SB_GLOBALS as sb_globals
-from helper_code.validate_participants_list import validate_user_list
-from set_services_on_canvas import set_services
-from cloudshell.api.cloudshell_api import AttributeNameValue, InputNameValue, CloudShellAPISession
-from helper_code.SandboxReporter import SandboxReporter
+from cloudshell.api.cloudshell_api import AttributeNameValue, CloudShellAPISession, InputNameValue
+from cloudshell.workflow.orchestration.sandbox import Sandbox
 from helper_code.execute_async_helper import execute_commands_async
 from helper_code.is_blueprint_in_domain import is_blueprint_in_domain
+from helper_code.SandboxReporter import SandboxReporter
 from helper_code.util_helpers import sandbox_name_truncater
-import time
+from helper_code.validate_participants_list import validate_user_list
+from set_services_on_canvas import set_services
 
 
 def _validate_required_global_input(input_key, input_val):
@@ -24,11 +25,13 @@ def _sync_sandboxes_wrapper(api, res_id, reporter, targeted_components_list):
     :return:
     """
     # SYNC REMAINING TIME
-    _, sync_sandbox_exceptions = execute_commands_async(api=api,
-                                                        res_id=res_id,
-                                                        target_components_list=targeted_components_list,
-                                                        target_type="Service",
-                                                        command_name=sb_globals.SYNC_REMAINING_TIME_COMMAND)
+    _, sync_sandbox_exceptions = execute_commands_async(
+        api=api,
+        res_id=res_id,
+        target_components_list=targeted_components_list,
+        target_type="Service",
+        command_name=sb_globals.SYNC_REMAINING_TIME_COMMAND,
+    )
     if sync_sandbox_exceptions:
         failed_sandboxes = [result[0] for result in sync_sandbox_exceptions]
         err_msg = "Failed Sandbox Extensions: {}".format(failed_sandboxes)
@@ -63,8 +66,7 @@ def launch_sandboxes_flow(sandbox, components=None):
         # rename sandbox
         new_name = "{} - {}".format(current_sandbox_name, target_blueprint_input_val)
         new_name = sandbox_name_truncater(new_name)
-        api.UpdateReservationName(reservationId=res_id,
-                                  name=new_name)
+        api.UpdateReservationName(reservationId=res_id, name=new_name)
 
     # inputs to be forwarded to service launcher of child sandboxes
     child_sb_globals = global_inputs_dict.get(sb_globals.GLOBAL_INPUTS_INPUT, "")
@@ -72,14 +74,15 @@ def launch_sandboxes_flow(sandbox, components=None):
 
     # inputs to generate users list of child sandboxes
     participants_list_input = global_inputs_dict.get(sb_globals.PARTICIPANTS_LIST_INPUT, "")
-    participants_list_input = None if participants_list_input.lower() in ["", "0", "none", "na", "n/a"] else participants_list_input
+    participants_list_input = (
+        None if participants_list_input.lower() in ["", "0", "none", "na", "n/a"] else participants_list_input
+    )
     cloudshell_group_input = global_inputs_dict.get(sb_globals.CLOUDSHELL_GROUP_INPUT, "")
-    cloudshell_group_input_exists = cloudshell_group_input and cloudshell_group_input.lower() not in ["none", "[any]",
-                                                                                                      "any"]
+    cloudshell_group_input_exists = cloudshell_group_input and cloudshell_group_input.lower() not in ["none", "[any]", "any"]
     if not participants_list_input and not cloudshell_group_input_exists:
         exc_msg = "Either '{}' or '{}' inputs need to populated to have users".format(
-            sb_globals.PARTICIPANTS_LIST_INPUT,
-            sb_globals.CLOUDSHELL_GROUP_INPUT)
+            sb_globals.PARTICIPANTS_LIST_INPUT, sb_globals.CLOUDSHELL_GROUP_INPUT
+        )
         reporter.err_out(exc_msg)
         raise ValueError(exc_msg)
 
@@ -102,7 +105,8 @@ def launch_sandboxes_flow(sandbox, components=None):
             concurrent_deploy_limit = int(concurrent_deploy_limit)
         else:
             exc_msg = "Concurrent Deploy Limit should be set to 'off', or set to an integer. Received: {}".format(
-                concurrent_deploy_limit)
+                concurrent_deploy_limit
+            )
             reporter.err_out(exc_msg)
             raise Exception(exc_msg)
 
@@ -116,7 +120,7 @@ def launch_sandboxes_flow(sandbox, components=None):
     if not participants_list_input:
         participants_list_set = set()
     else:
-        participants_list = [x.strip() for x in participants_list_input.split(',')]
+        participants_list = [x.strip() for x in participants_list_input.split(",")]
         validate_user_list(api, participants_list)
         participants_list_set = set(participants_list)
 
@@ -140,30 +144,32 @@ def launch_sandboxes_flow(sandbox, components=None):
 
     # GET CURRENT SERVICES ON CANVAS
     all_services = api.GetReservationDetails(res_id).ReservationDescription.Services
-    curr_controller_services = [s.Alias for s in all_services
-                                if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
+    curr_controller_services = [s.Alias for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
 
     # ADD SERVICES TO CANVAS IF EMPTY ELSE USE EXISTING
     if not curr_controller_services:
         sorted_students = sorted(all_users_set)
-        service_attributes = [AttributeNameValue(sb_globals.TARGET_BLUEPRINT_ATTR, target_blueprint_input_val),
-                              AttributeNameValue(sb_globals.GLOBAL_INPUTS_ATTR, child_sb_globals)]
+        service_attributes = [
+            AttributeNameValue(sb_globals.TARGET_BLUEPRINT_ATTR, target_blueprint_input_val),
+            AttributeNameValue(sb_globals.GLOBAL_INPUTS_ATTR, child_sb_globals),
+        ]
         reporter.warn_out("Adding Sandbox Controllers To Launcher Sandbox...")
         time.sleep(2)
-        set_services(api=api,
-                     res_id=res_id,
-                     reporter=reporter,
-                     student_list=sorted_students,
-                     target_blueprint_name=target_blueprint_input_val,
-                     attributes_list=service_attributes)
+        set_services(
+            api=api,
+            res_id=res_id,
+            reporter=reporter,
+            student_list=sorted_students,
+            target_blueprint_name=target_blueprint_input_val,
+            attributes_list=service_attributes,
+        )
     else:
         reporter.warn_out("Services already exist, skipping add step")
 
     # GET CURRENT SERVICES ON CANVAS
     time.sleep(5)
     all_services = api.GetReservationDetails(res_id).ReservationDescription.Services
-    curr_service_names = [s.Alias for s in all_services
-                          if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
+    curr_service_names = [s.Alias for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
     sorted_service_names = sorted(curr_service_names)
     service_launch_list = sorted_service_names if not is_health_check else sorted_service_names[1:]
 
@@ -174,12 +180,14 @@ def launch_sandboxes_flow(sandbox, components=None):
         first_service_name = sorted_service_names[0]
         reporter.warn_out("Starting HEALTH CHECK deploy...".format(first_service_name))
         try:
-            api.ExecuteCommand(reservationId=res_id,
-                               targetName=first_service_name,
-                               targetType="Service",
-                               commandName=sb_globals.START_SANDBOX_COMMAND,
-                               commandInputs=start_sandbox_inputs,
-                               printOutput=True)
+            api.ExecuteCommand(
+                reservationId=res_id,
+                targetName=first_service_name,
+                targetType="Service",
+                commandName=sb_globals.START_SANDBOX_COMMAND,
+                commandInputs=start_sandbox_inputs,
+                printOutput=True,
+            )
         except Exception as e:
             exc_msg = "HEALTH CHECK launch for blueprint '{}' FAILED: {}".format(first_service_name, str(e))
             reporter.err_out(exc_msg)
@@ -191,12 +199,14 @@ def launch_sandboxes_flow(sandbox, components=None):
         failed_sequential = []
         for service_name in service_launch_list:
             try:
-                api.ExecuteCommand(reservationId=res_id,
-                                   targetName=service_name,
-                                   targetType="Service",
-                                   commandName=sb_globals.START_SANDBOX_COMMAND,
-                                   commandInputs=start_sandbox_inputs,
-                                   printOutput=True)
+                api.ExecuteCommand(
+                    reservationId=res_id,
+                    targetName=service_name,
+                    targetType="Service",
+                    commandName=sb_globals.START_SANDBOX_COMMAND,
+                    commandInputs=start_sandbox_inputs,
+                    printOutput=True,
+                )
             except Exception as e:
                 failed_sequential.append(service_name)
                 exc_msg = "Sandbox failed for '{}'".format(service_name)
@@ -214,13 +224,15 @@ def launch_sandboxes_flow(sandbox, components=None):
 
     # ASYNC flow
     reporter.warn_out("Starting ASYNC deploy of sandboxes...")
-    _, start_sandbox_exceptions = execute_commands_async(api=api,
-                                                         res_id=res_id,
-                                                         target_components_list=service_launch_list,
-                                                         target_type="Service",
-                                                         command_name=sb_globals.START_SANDBOX_COMMAND,
-                                                         command_inputs=start_sandbox_inputs,
-                                                         max_thread_count=concurrent_deploy_limit)
+    _, start_sandbox_exceptions = execute_commands_async(
+        api=api,
+        res_id=res_id,
+        target_components_list=service_launch_list,
+        target_type="Service",
+        command_name=sb_globals.START_SANDBOX_COMMAND,
+        command_inputs=start_sandbox_inputs,
+        max_thread_count=concurrent_deploy_limit,
+    )
     if start_sandbox_exceptions:
         failed_sandboxes = [result[0] for result in start_sandbox_exceptions]
         err_msg = "Failed Sandboxes: {}".format(failed_sandboxes)

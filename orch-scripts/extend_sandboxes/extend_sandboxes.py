@@ -1,9 +1,10 @@
-from cloudshell.workflow.orchestration.sandbox import Sandbox
-import SB_GLOBALS as sb_globals
-from cloudshell.api.cloudshell_api import AttributeNameValue, InputNameValue, CloudShellAPISession
-from helper_code.SandboxReporter import SandboxReporter
-from helper_code.execute_async_helper import execute_commands_async
 import time
+
+import SB_GLOBALS as sb_globals
+from cloudshell.api.cloudshell_api import AttributeNameValue, CloudShellAPISession, InputNameValue
+from cloudshell.workflow.orchestration.sandbox import Sandbox
+from helper_code.execute_async_helper import execute_commands_async
+from helper_code.SandboxReporter import SandboxReporter
 
 
 def _sync_sandboxes_wrapper(api, res_id, reporter, targeted_components_list):
@@ -15,11 +16,13 @@ def _sync_sandboxes_wrapper(api, res_id, reporter, targeted_components_list):
     :return:
     """
     # SYNC REMAINING TIME
-    _, sync_sandbox_exceptions = execute_commands_async(api=api,
-                                                        res_id=res_id,
-                                                        target_components_list=targeted_components_list,
-                                                        target_type="Service",
-                                                        command_name=sb_globals.SYNC_REMAINING_TIME_COMMAND)
+    _, sync_sandbox_exceptions = execute_commands_async(
+        api=api,
+        res_id=res_id,
+        target_components_list=targeted_components_list,
+        target_type="Service",
+        command_name=sb_globals.SYNC_REMAINING_TIME_COMMAND,
+    )
     if sync_sandbox_exceptions:
         failed_sandboxes = [result[0] for result in sync_sandbox_exceptions]
         err_msg = "Failed Sandbox Extensions: {}".format(failed_sandboxes)
@@ -50,8 +53,7 @@ def extend_sandboxes_flow(sandbox, components=None):
 
     # GET CURRENT SERVICES ON CANVAS
     all_services = api.GetReservationDetails(res_id).ReservationDescription.Services
-    curr_services = [s for s in all_services
-                     if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
+    curr_services = [s for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
 
     def _is_sb_id(s):
         attrs = s.Attributes

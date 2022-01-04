@@ -11,7 +11,7 @@ import os
 # ===== Optional Variables to set =======
 
 # To name zip package something other than the default directory name
-CUSTOM_SCRIPT_NAME = ''
+CUSTOM_SCRIPT_NAME = ""
 
 # If you would like to keep your credentials bundled with zip (not recommended)
 EXCLUDE_CREDS_FROM_ZIP = True
@@ -34,8 +34,8 @@ def error_red(err_str):
     :param err_str:
     :return:
     """
-    CRED = '\033[91m'
-    CEND = '\033[0m'
+    CRED = "\033[91m"
+    CEND = "\033[0m"
     return CRED + err_str + CEND
 
 
@@ -57,14 +57,14 @@ def switch_off_debug_globals():
         try:
             true_string = "{} = True".format(global_var_name)
             false_string = "{} = False".format(global_var_name)
-            inplace_change(file_path=debug_globals_file_path,
-                           curr_pattern=true_string,
-                           new_string=false_string)
+            inplace_change(file_path=debug_globals_file_path, curr_pattern=true_string, new_string=false_string)
         except Exception as e:
-            print(error_red("[-] Issue updating {global_var} "
-                            "in {debug_file}\n".format(global_var=global_var_name,
-                                                       debug_file=debug_globals_file_path)
-                            + str(e)))
+            print(
+                error_red(
+                    "[-] Issue updating {global_var} "
+                    "in {debug_file}\n".format(global_var=global_var_name, debug_file=debug_globals_file_path) + str(e)
+                )
+            )
 
     debug_globals_file_path = os.getcwd() + "\\" + DEBUG_GLOBALS_FILE_NAME
     debug_globals_file_exists = os.path.isfile(debug_globals_file_path)
@@ -75,22 +75,24 @@ def switch_off_debug_globals():
 
 
 def get_zip_details():
-    parent_dir_path = os.path.abspath('.')
+    parent_dir_path = os.path.abspath(".")
     parent_dir_name = os.path.basename(parent_dir_path)
     script_name = CUSTOM_SCRIPT_NAME or parent_dir_name
-    zip_file_name = script_name + '.zip'
+    zip_file_name = script_name + ".zip"
 
-    return {"parent_dir_path": parent_dir_path,
-            "parent_dir_name": parent_dir_name,
-            "script_name": script_name,
-            "zip_file_name": zip_file_name}
+    return {
+        "parent_dir_path": parent_dir_path,
+        "parent_dir_name": parent_dir_name,
+        "script_name": script_name,
+        "zip_file_name": zip_file_name,
+    }
 
 
 def zip_files():
     def is_whitelisted(f, file_path):
         is_regular_file = os.path.isfile(file_path)
         is_not_excluded = f not in files_to_exclude
-        is_not_pyc = not f.endswith('.pyc')
+        is_not_pyc = not f.endswith(".pyc")
         return is_regular_file and is_not_excluded and is_not_pyc
 
     def get_cred_file_name():
@@ -114,13 +116,14 @@ def zip_files():
 
     def get_cred_template_string():
         if does_cred_template_file_exist():
-            f = open(get_cred_template_path(), 'r')
+            f = open(get_cred_template_path(), "r")
             text = f.read().strip()
             f.close()
             return text
 
     def make_zipfile(output_filename, source_dir):
         import zipfile
+
         with zipfile.ZipFile(output_filename, "w", zipfile.ZIP_DEFLATED) as z:
             for root, dirs, files in os.walk(source_dir):
                 dirs[:] = [d for d in dirs if d not in dirs_to_exclude]
@@ -138,8 +141,7 @@ def zip_files():
     dirs_to_exclude = [".git"]
     files_to_exclude = [zip_file_name, get_cred_file_name(), "venv", ".idea"]
     try:
-        make_zipfile(output_filename=zip_file_name,
-                     source_dir=zip_details["parent_dir_path"])
+        make_zipfile(output_filename=zip_file_name, source_dir=zip_details["parent_dir_path"])
     except Exception as e:
         print(error_red("[-] error zipping up file: " + str(e)))
         exit(1)
@@ -151,13 +153,16 @@ def zip_files():
 
 
 def establish_cs_session():
-    from credentials import credentials
     import cloudshell.api.cloudshell_api as cs_api
+    from credentials import credentials
+
     try:
-        ses = cs_api.CloudShellAPISession(host=credentials["server"],
-                                          username=credentials["user"],
-                                          password=credentials["password"],
-                                          domain=credentials["domain"])
+        ses = cs_api.CloudShellAPISession(
+            host=credentials["server"],
+            username=credentials["user"],
+            password=credentials["password"],
+            domain=credentials["domain"],
+        )
     except Exception as e:
         print(error_red("[-] ERROR ESTABLISHING CS_API SESSION. CHECK CREDENTIALS AND CONNECTIVITY.\n" + str(e)))
         exit(1)
@@ -169,8 +174,7 @@ def update_script_api_wrapper(cs_ses, script_name, zip_address):
     try:
         cs_ses.UpdateScript(script_name, zip_address)
     except Exception as e:
-        print(error_red("[-] ERROR UPDATING SCRIPT IN PORTAL\n" + str(e)) + "\n"
-                                                                            "PLEASE LOAD SCRIPT MANUALLY THE FIRST TIME")
+        print(error_red("[-] ERROR UPDATING SCRIPT IN PORTAL\n" + str(e)) + "\n" "PLEASE LOAD SCRIPT MANUALLY THE FIRST TIME")
         exit(1)
     else:
         print("[+] '{script}' updated on CloudShell Successfully".format(script=script_name))
@@ -182,9 +186,7 @@ def update_script_on_server():
     zip_files()
     cs_ses = establish_cs_session()
     zip_details = get_zip_details()
-    update_script_api_wrapper(cs_ses=cs_ses,
-                              script_name=zip_details["script_name"],
-                              zip_address=zip_details["zip_file_name"])
+    update_script_api_wrapper(cs_ses=cs_ses, script_name=zip_details["script_name"], zip_address=zip_details["zip_file_name"])
 
 
 update_script_on_server()

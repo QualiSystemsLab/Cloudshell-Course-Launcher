@@ -1,9 +1,10 @@
 """
 Convenience methods for printing to sandbox console and logging at same time
 """
-from cloudshell.api.cloudshell_api import CloudShellAPISession
-from logging import Logger
 import inspect
+from logging import Logger
+
+from cloudshell.api.cloudshell_api import CloudShellAPISession
 
 
 class SandboxReporter(object):
@@ -30,9 +31,7 @@ class SandboxReporter(object):
 
     @staticmethod
     def _html_wrap(content, color, elm):
-        return "<{elm} style='color: {color}'>{content}</{elm}>".format(content=content,
-                                                                        elm=elm,
-                                                                        color=color)
+        return "<{elm} style='color: {color}'>{content}</{elm}>".format(content=content, elm=elm, color=color)
 
     def sb_html_print(self, message, txt_color="white", html_elm="span"):
         """
@@ -77,12 +76,15 @@ class SandboxReporter(object):
         :param str text: the link text to be displayed
         :return:
         """
+
         def html_link_wrap(target_url, link_text):
             return """<a href={url} 
                    style="text-decoration: underline"
                    target = "_blank"
                    rel = "noopener noreferrer"
-                   >{link_text}</a>""".format(url=target_url, link_text=link_text)
+                   >{link_text}</a>""".format(
+                url=target_url, link_text=link_text
+            )
 
         wrapped_link = html_link_wrap(url, text)
         self.sb_print(wrapped_link)
@@ -173,11 +175,14 @@ if __name__ == "__main__":
     LIVE_SANDBOX_ID = "39e83e10-3613-425e-b4db-591a34acd193"
     session = CloudShellAPISession("localhost", "admin", "admin", "Global")
     from cloudshell.logging.qs_logger import get_qs_logger
+
     logger = get_qs_logger(log_group=LIVE_SANDBOX_ID)
     reporter = SandboxReporter(session, LIVE_SANDBOX_ID, logger)
+
     def my_func():
         reporter.info_out("here we go")
         reporter.warn_out("here we go")
         reporter.err_out("here we go")
         reporter.success_out("here we go")
+
     my_func()

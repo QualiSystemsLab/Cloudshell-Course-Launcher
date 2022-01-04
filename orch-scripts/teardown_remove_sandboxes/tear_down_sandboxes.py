@@ -1,8 +1,8 @@
-from cloudshell.workflow.orchestration.sandbox import Sandbox
 import SB_GLOBALS as sb_globals
-from cloudshell.api.cloudshell_api import AttributeNameValue, InputNameValue, CloudShellAPISession
-from helper_code.SandboxReporter import SandboxReporter
+from cloudshell.api.cloudshell_api import AttributeNameValue, CloudShellAPISession, InputNameValue
+from cloudshell.workflow.orchestration.sandbox import Sandbox
 from helper_code.execute_async_helper import execute_commands_async
+from helper_code.SandboxReporter import SandboxReporter
 
 
 def _sync_sandboxes_wrapper(api, res_id, reporter, targeted_components_list):
@@ -14,11 +14,13 @@ def _sync_sandboxes_wrapper(api, res_id, reporter, targeted_components_list):
     :return:
     """
     # SYNC REMAINING TIME
-    _, sync_sandbox_exceptions = execute_commands_async(api=api,
-                                                        res_id=res_id,
-                                                        target_components_list=targeted_components_list,
-                                                        target_type="Service",
-                                                        command_name=sb_globals.SYNC_REMAINING_TIME_COMMAND)
+    _, sync_sandbox_exceptions = execute_commands_async(
+        api=api,
+        res_id=res_id,
+        target_components_list=targeted_components_list,
+        target_type="Service",
+        command_name=sb_globals.SYNC_REMAINING_TIME_COMMAND,
+    )
     if sync_sandbox_exceptions:
         failed_sandboxes = [result[0] for result in sync_sandbox_exceptions]
         err_msg = "Failed Sandbox Extensions: {}".format(failed_sandboxes)
@@ -59,14 +61,15 @@ def tear_down_sandboxes_flow(sandbox, components=None):
         elif concurrent_deploy_limit.isdigit():
             concurrent_deploy_limit = int(concurrent_deploy_limit)
         else:
-            exc_msg = "Concurrent Deploy Limit should be set to 'off', or set to an integer. Received: {}".format(concurrent_deploy_limit)
+            exc_msg = "Concurrent Deploy Limit should be set to 'off', or set to an integer. Received: {}".format(
+                concurrent_deploy_limit
+            )
             reporter.err_out(exc_msg)
             raise Exception(exc_msg)
 
     # GET CURRENT SERVICES ON CANVAS
     all_services = api.GetReservationDetails(res_id).ReservationDescription.Services
-    curr_services = [s for s in all_services
-                     if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
+    curr_services = [s for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
 
     def _is_sb_id(s):
         attrs = s.Attributes
@@ -85,11 +88,13 @@ def tear_down_sandboxes_flow(sandbox, components=None):
         failed_sequential = []
         for service_name in sorted_service_names:
             try:
-                api.ExecuteCommand(reservationId=res_id,
-                                   targetName=service_name,
-                                   targetType="Service",
-                                   commandName=sb_globals.END_SANDBOX_COMMAND,
-                                   printOutput=True)
+                api.ExecuteCommand(
+                    reservationId=res_id,
+                    targetName=service_name,
+                    targetType="Service",
+                    commandName=sb_globals.END_SANDBOX_COMMAND,
+                    printOutput=True,
+                )
             except Exception as e:
                 failed_sequential.append(service_name)
                 exc_msg = "'{}' teardown failed: '{}'".format(service_name, str(e))
@@ -102,12 +107,14 @@ def tear_down_sandboxes_flow(sandbox, components=None):
 
     # ASYNC flow
     reporter.warn_out("Starting ASYNC teardown of sandboxes...")
-    _, teardown_sandbox_exceptions = execute_commands_async(api=api,
-                                                            res_id=res_id,
-                                                            target_components_list=sorted_service_names,
-                                                            target_type="Service",
-                                                            command_name=sb_globals.END_SANDBOX_COMMAND,
-                                                            max_thread_count=concurrent_deploy_limit)
+    _, teardown_sandbox_exceptions = execute_commands_async(
+        api=api,
+        res_id=res_id,
+        target_components_list=sorted_service_names,
+        target_type="Service",
+        command_name=sb_globals.END_SANDBOX_COMMAND,
+        max_thread_count=concurrent_deploy_limit,
+    )
     if teardown_sandbox_exceptions:
         failed_sandboxes = [result[0] for result in teardown_sandbox_exceptions]
         err_msg = "Failed Sandbox Teardowns: {}".format(failed_sandboxes)

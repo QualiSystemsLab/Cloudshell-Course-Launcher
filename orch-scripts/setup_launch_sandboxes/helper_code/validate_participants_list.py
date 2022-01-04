@@ -9,10 +9,10 @@ def validate_user_list(api, user_list):
     """
     invalid_users = []
     for user in user_list:
-       try:
-           api.GetUserDetails(user)
-       except Exception as e:
-           invalid_users.append(user)
+        try:
+            api.GetUserDetails(user)
+        except Exception as e:
+            invalid_users.append(user)
 
     if invalid_users:
         raise Exception("The following users are invalid - '{}'".format(invalid_users))

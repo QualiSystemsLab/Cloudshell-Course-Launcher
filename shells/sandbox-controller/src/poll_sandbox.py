@@ -1,7 +1,8 @@
-from cloudshell.api.cloudshell_api import CloudShellAPISession
-from retrying import retry, RetryError
-from time import time
 from collections import namedtuple
+from time import time
+
+from cloudshell.api.cloudshell_api import CloudShellAPISession
+from retrying import RetryError, retry
 
 PollingResults = namedtuple("PollingResults", ["sandbox_provisioning_status", "elapsed_polling_minutes"])
 
@@ -80,8 +81,7 @@ def poll_setup_for_provisioning_status(api, res_id, max_polling_minutes=45, poll
     :return:
     :rtype: PollingResults
     """
-    return _poll_sandbox_for_status(api, res_id, _validate_setup_status, max_polling_minutes,
-                                    polling_frequency_seconds)
+    return _poll_sandbox_for_status(api, res_id, _validate_setup_status, max_polling_minutes, polling_frequency_seconds)
 
 
 def poll_teardown_for_completion_status(api, res_id, max_polling_minutes=45, polling_frequency_seconds=10):
@@ -94,8 +94,7 @@ def poll_teardown_for_completion_status(api, res_id, max_polling_minutes=45, pol
     :return:
     :rtype: PollingResults
     """
-    return _poll_sandbox_for_status(api, res_id, _validate_teardown_status, max_polling_minutes,
-                                    polling_frequency_seconds)
+    return _poll_sandbox_for_status(api, res_id, _validate_teardown_status, max_polling_minutes, polling_frequency_seconds)
 
 
 if __name__ == "__main__":

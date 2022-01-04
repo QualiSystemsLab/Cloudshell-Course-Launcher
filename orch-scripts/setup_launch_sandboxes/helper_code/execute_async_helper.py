@@ -1,5 +1,6 @@
-from cloudshell.api.cloudshell_api import CloudShellAPISession, InputNameValue
 from multiprocessing.pool import ThreadPool
+
+from cloudshell.api.cloudshell_api import CloudShellAPISession, InputNameValue
 
 
 # Define the function which will be executed within the ThreadPool
@@ -15,17 +16,20 @@ def _execute_command_wrapper(api, res_id, target_name, target_type, command_name
     :return:
     """
     command_inputs = command_inputs if command_inputs else []
-    res = api.ExecuteCommand(reservationId=res_id,
-                             targetName=target_name,
-                             targetType=target_type,
-                             commandName=command_name,
-                             commandInputs=command_inputs,
-                             printOutput=True).Output
+    res = api.ExecuteCommand(
+        reservationId=res_id,
+        targetName=target_name,
+        targetType=target_type,
+        commandName=command_name,
+        commandInputs=command_inputs,
+        printOutput=True,
+    ).Output
     return res
 
 
-def execute_commands_async(api, res_id, target_components_list, target_type, command_name, command_inputs=None,
-                           max_thread_count=0):
+def execute_commands_async(
+    api, res_id, target_components_list, target_type, command_name, command_inputs=None, max_thread_count=0
+):
     """
     execute commands async and return tuple of result lists (success_list, exceptions_list)
     each list contains tuples of (component_name, async_response)
@@ -73,13 +77,15 @@ if __name__ == "__main__":
 
     api = CloudShellAPISession(host="localhost", username="admin", password="admin", domain="localhost")
 
-    my_success_responses, my_exception_responses = execute_commands_async(api=api,
-                                                                          res_id=LIVE_SANDBOX_ID,
-                                                                          target_components_list=target_component_names,
-                                                                          target_type=component_type,
-                                                                          command_name=command_name,
-                                                                          command_inputs=command_inputs,
-                                                                          max_thread_count=max_thread_count)
+    my_success_responses, my_exception_responses = execute_commands_async(
+        api=api,
+        res_id=LIVE_SANDBOX_ID,
+        target_components_list=target_component_names,
+        target_type=component_type,
+        command_name=command_name,
+        command_inputs=command_inputs,
+        max_thread_count=max_thread_count,
+    )
     if my_exception_responses:
         # each response in list is tuple of (component name, error message string)
         failed_component_names = [result[0] for result in my_exception_responses]
