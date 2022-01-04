@@ -31,7 +31,9 @@ class SandboxReporter(object):
 
     @staticmethod
     def _html_wrap(content, color, elm):
-        return "<{elm} style='color: {color}'>{content}</{elm}>".format(content=content, elm=elm, color=color)
+        return "<{elm} style='color: {color}'>{content}</{elm}>".format(
+            content=content, elm=elm, color=color
+        )
 
     def sb_html_print(self, message, txt_color="white", html_elm="span"):
         """
@@ -112,7 +114,9 @@ class SandboxReporter(object):
 
     def _validate_logger(self):
         if not self._logger:
-            raise Exception("Can not perform log operation. No logger instance passed to SandboxReporter")
+            raise Exception(
+                "Can not perform log operation. No logger instance passed to SandboxReporter"
+            )
 
     def info_out(self, message, log_only=False, target_func_stack_index=2):
         """

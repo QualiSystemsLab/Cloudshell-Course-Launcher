@@ -1,5 +1,4 @@
-from cloudshell.helpers.scripts.cloudshell_dev_helpers import \
-    attach_to_cloudshell_as
+from cloudshell.helpers.scripts.cloudshell_dev_helpers import attach_to_cloudshell_as
 from cloudshell.workflow.orchestration.sandbox import Sandbox
 from credentials import credentials
 from tear_down_sandboxes import tear_down_sandboxes_flow

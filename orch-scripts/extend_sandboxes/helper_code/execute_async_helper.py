@@ -4,7 +4,9 @@ from cloudshell.api.cloudshell_api import CloudShellAPISession, InputNameValue
 
 
 # Define the function which will be executed within the ThreadPool
-def _execute_command_wrapper(api, res_id, target_name, target_type, command_name, command_inputs=None):
+def _execute_command_wrapper(
+    api, res_id, target_name, target_type, command_name, command_inputs=None
+):
     """
     function to be passed to threading implementation
     :param CloudShellAPISession api:
@@ -28,7 +30,13 @@ def _execute_command_wrapper(api, res_id, target_name, target_type, command_name
 
 
 def execute_commands_async(
-    api, res_id, target_components_list, target_type, command_name, command_inputs=None, max_thread_count=None
+    api,
+    res_id,
+    target_components_list,
+    target_type,
+    command_name,
+    command_inputs=None,
+    max_thread_count=None,
 ):
     """
     execute commands async and return tuple of result lists (success_list, exceptions_list)
@@ -42,13 +50,24 @@ def execute_commands_async(
     :param int max_thread_count:
     :return:
     """
-    max_thread_count = max_thread_count if max_thread_count else len(target_components_list)
+    max_thread_count = (
+        max_thread_count if max_thread_count else len(target_components_list)
+    )
     thread_pool = ThreadPool(processes=max_thread_count)
 
     async_results = []
     for target_name in target_components_list:
-        execute_command_tuple_inputs = (api, res_id, target_name, target_type, command_name, command_inputs)
-        async_result = thread_pool.apply_async(_execute_command_wrapper, execute_command_tuple_inputs)
+        execute_command_tuple_inputs = (
+            api,
+            res_id,
+            target_name,
+            target_type,
+            command_name,
+            command_inputs,
+        )
+        async_result = thread_pool.apply_async(
+            _execute_command_wrapper, execute_command_tuple_inputs
+        )
         async_results.append((target_name, async_result))
     thread_pool.close()
     thread_pool.join()

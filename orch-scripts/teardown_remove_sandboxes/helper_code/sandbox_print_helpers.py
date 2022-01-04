@@ -16,7 +16,9 @@ def sb_print(api, reservation_id, message):
 
 
 def _html_wrap(content, color, elm):
-    return "<{elm} style='color: {color}'>{content}</{elm}>".format(content=content, elm=elm, color=color)
+    return "<{elm} style='color: {color}'>{content}</{elm}>".format(
+        content=content, elm=elm, color=color
+    )
 
 
 def sb_html_print(api, reservation_id, message, txt_color="white", html_elm="span"):

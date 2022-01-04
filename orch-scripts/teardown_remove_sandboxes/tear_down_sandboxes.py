@@ -1,7 +1,9 @@
 import SB_GLOBALS as sb_globals
-from cloudshell.api.cloudshell_api import (AttributeNameValue,
-                                           CloudShellAPISession,
-                                           InputNameValue)
+from cloudshell.api.cloudshell_api import (
+    AttributeNameValue,
+    CloudShellAPISession,
+    InputNameValue,
+)
 from cloudshell.workflow.orchestration.sandbox import Sandbox
 from helper_code.execute_async_helper import execute_commands_async
 from helper_code.SandboxReporter import SandboxReporter
@@ -48,7 +50,9 @@ def tear_down_sandboxes_flow(sandbox, components=None):
     # VALIDATE GLOBAL INPUTS
     global_inputs_dict = sandbox.global_inputs
 
-    is_async_deploy = global_inputs_dict.get(sb_globals.DEPLOY_CONCURRENTLY_BOOL_INPUT, True)
+    is_async_deploy = global_inputs_dict.get(
+        sb_globals.DEPLOY_CONCURRENTLY_BOOL_INPUT, True
+    )
     if isinstance(is_async_deploy, str):
         if is_async_deploy.lower() in ["true", "y", "yes", "[any]", "any"]:
             is_async_deploy = True
@@ -56,9 +60,19 @@ def tear_down_sandboxes_flow(sandbox, components=None):
             is_async_deploy = False
 
     # type conversion for deploy batch count
-    concurrent_deploy_limit = global_inputs_dict.get(sb_globals.CONCURRENT_DEPLOY_LIMIT_INPUT, 0)
+    concurrent_deploy_limit = global_inputs_dict.get(
+        sb_globals.CONCURRENT_DEPLOY_LIMIT_INPUT, 0
+    )
     if isinstance(concurrent_deploy_limit, str):
-        if concurrent_deploy_limit.lower() in ["false", "f", "off", "no", "n", "[any]", "any"]:
+        if concurrent_deploy_limit.lower() in [
+            "false",
+            "f",
+            "off",
+            "no",
+            "n",
+            "[any]",
+            "any",
+        ]:
             concurrent_deploy_limit = 0
         elif concurrent_deploy_limit.isdigit():
             concurrent_deploy_limit = int(concurrent_deploy_limit)
@@ -71,11 +85,15 @@ def tear_down_sandboxes_flow(sandbox, components=None):
 
     # GET CURRENT SERVICES ON CANVAS
     all_services = api.GetReservationDetails(res_id).ReservationDescription.Services
-    curr_services = [s for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
+    curr_services = [
+        s for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL
+    ]
 
     def _is_sb_id(s):
         attrs = s.Attributes
-        sb_id_val = [attr for attr in attrs if attr.Name == sb_globals.SANDBOX_ID_ATTR][0].Value
+        sb_id_val = [attr for attr in attrs if attr.Name == sb_globals.SANDBOX_ID_ATTR][
+            0
+        ].Value
         if sb_id_val:
             return True
         else:

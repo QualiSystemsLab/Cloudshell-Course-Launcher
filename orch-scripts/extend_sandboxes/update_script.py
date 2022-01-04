@@ -57,12 +57,19 @@ def switch_off_debug_globals():
         try:
             true_string = "{} = True".format(global_var_name)
             false_string = "{} = False".format(global_var_name)
-            inplace_change(file_path=debug_globals_file_path, curr_pattern=true_string, new_string=false_string)
+            inplace_change(
+                file_path=debug_globals_file_path,
+                curr_pattern=true_string,
+                new_string=false_string,
+            )
         except Exception as e:
             print(
                 error_red(
                     "[-] Issue updating {global_var} "
-                    "in {debug_file}\n".format(global_var=global_var_name, debug_file=debug_globals_file_path) + str(e)
+                    "in {debug_file}\n".format(
+                        global_var=global_var_name, debug_file=debug_globals_file_path
+                    )
+                    + str(e)
                 )
             )
 
@@ -107,7 +114,9 @@ def zip_files():
 
     def get_cred_template_path():
         cred_template_file_name = "creds_template.py"
-        cred_template_path = os.getcwd() + "\\" + "helper_code" + "\\" + cred_template_file_name
+        cred_template_path = (
+            os.getcwd() + "\\" + "helper_code" + "\\" + cred_template_file_name
+        )
         return cred_template_path
 
     def does_cred_template_file_exist():
@@ -133,7 +142,11 @@ def zip_files():
                         arcname = os.path.join(os.path.relpath(root, source_dir), f)
                         z.write(file_path, arcname)
             # add creds template placeholder strip to zip package
-            if EXCLUDE_CREDS_FROM_ZIP and does_cred_template_file_exist() and does_cred_file_exist():
+            if (
+                EXCLUDE_CREDS_FROM_ZIP
+                and does_cred_template_file_exist()
+                and does_cred_file_exist()
+            ):
                 z.writestr(get_cred_file_name(), get_cred_template_string())
 
     zip_details = get_zip_details()
@@ -141,7 +154,9 @@ def zip_files():
     dirs_to_exclude = [".git"]
     files_to_exclude = [zip_file_name, get_cred_file_name(), "venv", ".idea"]
     try:
-        make_zipfile(output_filename=zip_file_name, source_dir=zip_details["parent_dir_path"])
+        make_zipfile(
+            output_filename=zip_file_name, source_dir=zip_details["parent_dir_path"]
+        )
     except Exception as e:
         print(error_red("[-] error zipping up file: " + str(e)))
         exit(1)
@@ -164,7 +179,12 @@ def establish_cs_session():
             domain=credentials["domain"],
         )
     except Exception as e:
-        print(error_red("[-] ERROR ESTABLISHING CS_API SESSION. CHECK CREDENTIALS AND CONNECTIVITY.\n" + str(e)))
+        print(
+            error_red(
+                "[-] ERROR ESTABLISHING CS_API SESSION. CHECK CREDENTIALS AND CONNECTIVITY.\n"
+                + str(e)
+            )
+        )
         exit(1)
     else:
         return ses
@@ -174,10 +194,17 @@ def update_script_api_wrapper(cs_ses, script_name, zip_address):
     try:
         cs_ses.UpdateScript(script_name, zip_address)
     except Exception as e:
-        print(error_red("[-] ERROR UPDATING SCRIPT IN PORTAL\n" + str(e)) + "\n" "PLEASE LOAD SCRIPT MANUALLY THE FIRST TIME")
+        print(
+            error_red("[-] ERROR UPDATING SCRIPT IN PORTAL\n" + str(e)) + "\n"
+            "PLEASE LOAD SCRIPT MANUALLY THE FIRST TIME"
+        )
         exit(1)
     else:
-        print("[+] '{script}' updated on CloudShell Successfully".format(script=script_name))
+        print(
+            "[+] '{script}' updated on CloudShell Successfully".format(
+                script=script_name
+            )
+        )
 
 
 def update_script_on_server():
@@ -186,7 +213,11 @@ def update_script_on_server():
     zip_files()
     cs_ses = establish_cs_session()
     zip_details = get_zip_details()
-    update_script_api_wrapper(cs_ses=cs_ses, script_name=zip_details["script_name"], zip_address=zip_details["zip_file_name"])
+    update_script_api_wrapper(
+        cs_ses=cs_ses,
+        script_name=zip_details["script_name"],
+        zip_address=zip_details["zip_file_name"],
+    )
 
 
 update_script_on_server()

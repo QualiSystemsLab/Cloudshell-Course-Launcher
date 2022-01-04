@@ -1,9 +1,11 @@
 import time
 
 import SB_GLOBALS as sb_globals
-from cloudshell.api.cloudshell_api import (AttributeNameValue,
-                                           CloudShellAPISession,
-                                           InputNameValue)
+from cloudshell.api.cloudshell_api import (
+    AttributeNameValue,
+    CloudShellAPISession,
+    InputNameValue,
+)
 from cloudshell.workflow.orchestration.sandbox import Sandbox
 from helper_code.execute_async_helper import execute_commands_async
 from helper_code.is_blueprint_in_domain import is_blueprint_in_domain
@@ -15,7 +17,9 @@ from set_services_on_canvas import set_services
 
 def _validate_required_global_input(input_key, input_val):
     if not input_val:
-        raise Exception("'{}' input is required by setup script automation".format(input_key))
+        raise Exception(
+            "'{}' input is required by setup script automation".format(input_key)
+        )
 
 
 def _sync_sandboxes_wrapper(api, res_id, reporter, targeted_components_list):
@@ -60,8 +64,12 @@ def launch_sandboxes_flow(sandbox, components=None):
 
     # VALIDATE GLOBAL INPUTS
     global_inputs_dict = sandbox.global_inputs
-    target_blueprint_input_val = global_inputs_dict.get(sb_globals.TARGET_BLUEPRINT_INPUT)
-    _validate_required_global_input(sb_globals.TARGET_BLUEPRINT_INPUT, target_blueprint_input_val)
+    target_blueprint_input_val = global_inputs_dict.get(
+        sb_globals.TARGET_BLUEPRINT_INPUT
+    )
+    _validate_required_global_input(
+        sb_globals.TARGET_BLUEPRINT_INPUT, target_blueprint_input_val
+    )
 
     # prevent rename when re-running setup
     if target_blueprint_input_val.lower() not in current_sandbox_name.lower():
@@ -72,15 +80,26 @@ def launch_sandboxes_flow(sandbox, components=None):
 
     # inputs to be forwarded to service launcher of child sandboxes
     child_sb_globals = global_inputs_dict.get(sb_globals.GLOBAL_INPUTS_INPUT, "")
-    child_sb_globals = None if child_sb_globals.lower() in ["0", ""] else child_sb_globals
+    child_sb_globals = (
+        None if child_sb_globals.lower() in ["0", ""] else child_sb_globals
+    )
 
     # inputs to generate users list of child sandboxes
-    participants_list_input = global_inputs_dict.get(sb_globals.PARTICIPANTS_LIST_INPUT, "")
-    participants_list_input = (
-        None if participants_list_input.lower() in ["", "0", "none", "na", "n/a"] else participants_list_input
+    participants_list_input = global_inputs_dict.get(
+        sb_globals.PARTICIPANTS_LIST_INPUT, ""
     )
-    cloudshell_group_input = global_inputs_dict.get(sb_globals.CLOUDSHELL_GROUP_INPUT, "")
-    cloudshell_group_input_exists = cloudshell_group_input and cloudshell_group_input.lower() not in ["none", "[any]", "any"]
+    participants_list_input = (
+        None
+        if participants_list_input.lower() in ["", "0", "none", "na", "n/a"]
+        else participants_list_input
+    )
+    cloudshell_group_input = global_inputs_dict.get(
+        sb_globals.CLOUDSHELL_GROUP_INPUT, ""
+    )
+    cloudshell_group_input_exists = (
+        cloudshell_group_input
+        and cloudshell_group_input.lower() not in ["none", "[any]", "any"]
+    )
     if not participants_list_input and not cloudshell_group_input_exists:
         exc_msg = "Either '{}' or '{}' inputs need to populated to have users".format(
             sb_globals.PARTICIPANTS_LIST_INPUT, sb_globals.CLOUDSHELL_GROUP_INPUT
@@ -88,10 +107,18 @@ def launch_sandboxes_flow(sandbox, components=None):
         reporter.err_out(exc_msg)
         raise ValueError(exc_msg)
 
-    health_check_first_input_val = global_inputs_dict.get(sb_globals.HEALTH_CHECK_SANDBOX_INPUT)
-    is_health_check = True if health_check_first_input_val.lower() in ["true", "t", "yes", "y"] else False
+    health_check_first_input_val = global_inputs_dict.get(
+        sb_globals.HEALTH_CHECK_SANDBOX_INPUT
+    )
+    is_health_check = (
+        True
+        if health_check_first_input_val.lower() in ["true", "t", "yes", "y"]
+        else False
+    )
 
-    async_deploy_input_val = global_inputs_dict.get(sb_globals.DEPLOY_CONCURRENTLY_BOOL_INPUT, True)
+    async_deploy_input_val = global_inputs_dict.get(
+        sb_globals.DEPLOY_CONCURRENTLY_BOOL_INPUT, True
+    )
     if isinstance(async_deploy_input_val, str):
         if async_deploy_input_val.lower() in ["true", "y", "yes", "[any]", "any"]:
             async_deploy_input_val = True
@@ -99,9 +126,19 @@ def launch_sandboxes_flow(sandbox, components=None):
             async_deploy_input_val = False
 
     # type conversion for deploy batch count
-    concurrent_deploy_limit = global_inputs_dict.get(sb_globals.CONCURRENT_DEPLOY_LIMIT_INPUT, 0)
+    concurrent_deploy_limit = global_inputs_dict.get(
+        sb_globals.CONCURRENT_DEPLOY_LIMIT_INPUT, 0
+    )
     if isinstance(concurrent_deploy_limit, str):
-        if concurrent_deploy_limit.lower() in ["false", "f", "off", "no", "n", "[any]", "any"]:
+        if concurrent_deploy_limit.lower() in [
+            "false",
+            "f",
+            "off",
+            "no",
+            "n",
+            "[any]",
+            "any",
+        ]:
             concurrent_deploy_limit = 0
         elif concurrent_deploy_limit.isdigit():
             concurrent_deploy_limit = int(concurrent_deploy_limit)
@@ -114,7 +151,11 @@ def launch_sandboxes_flow(sandbox, components=None):
 
     # VALIDATE THAT BLUEPRINT NAME IS VALID AND IN DOMAIN
     if not is_blueprint_in_domain(api, target_blueprint_input_val):
-        exc_msg = "Validation Failed. Check spelling and Blueprint domain for '{}'".format(target_blueprint_input_val)
+        exc_msg = (
+            "Validation Failed. Check spelling and Blueprint domain for '{}'".format(
+                target_blueprint_input_val
+            )
+        )
         reporter.err_out(exc_msg)
         raise Exception(exc_msg)
 
@@ -131,9 +172,13 @@ def launch_sandboxes_flow(sandbox, components=None):
         target_group_users_set = set()
     else:
         all_groups = api.GetGroupsDetails().Groups
-        target_group_search = [group for group in all_groups if group.Name == cloudshell_group_input]
+        target_group_search = [
+            group for group in all_groups if group.Name == cloudshell_group_input
+        ]
         if not target_group_search:
-            exc_msg = "Group '{}' does not exist in system".format(cloudshell_group_input)
+            exc_msg = "Group '{}' does not exist in system".format(
+                cloudshell_group_input
+            )
             reporter.err_out(exc_msg)
             raise Exception(exc_msg)
 
@@ -146,13 +191,19 @@ def launch_sandboxes_flow(sandbox, components=None):
 
     # GET CURRENT SERVICES ON CANVAS
     all_services = api.GetReservationDetails(res_id).ReservationDescription.Services
-    curr_controller_services = [s.Alias for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
+    curr_controller_services = [
+        s.Alias
+        for s in all_services
+        if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL
+    ]
 
     # ADD SERVICES TO CANVAS IF EMPTY ELSE USE EXISTING
     if not curr_controller_services:
         sorted_students = sorted(all_users_set)
         service_attributes = [
-            AttributeNameValue(sb_globals.TARGET_BLUEPRINT_ATTR, target_blueprint_input_val),
+            AttributeNameValue(
+                sb_globals.TARGET_BLUEPRINT_ATTR, target_blueprint_input_val
+            ),
             AttributeNameValue(sb_globals.GLOBAL_INPUTS_ATTR, child_sb_globals),
         ]
         reporter.warn_out("Adding Sandbox Controllers To Launcher Sandbox...")
@@ -171,13 +222,23 @@ def launch_sandboxes_flow(sandbox, components=None):
     # GET CURRENT SERVICES ON CANVAS
     time.sleep(5)
     all_services = api.GetReservationDetails(res_id).ReservationDescription.Services
-    curr_service_names = [s.Alias for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
+    curr_service_names = [
+        s.Alias
+        for s in all_services
+        if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL
+    ]
     sorted_service_names = sorted(curr_service_names)
-    service_launch_list = sorted_service_names if not is_health_check else sorted_service_names[1:]
+    service_launch_list = (
+        sorted_service_names if not is_health_check else sorted_service_names[1:]
+    )
 
     # START EXECUTION
     remaining_minutes = api.GetReservationRemainingTime(res_id).RemainingTimeInMinutes
-    start_sandbox_inputs = [InputNameValue(sb_globals.START_SANDBOX_DURATION_PARAM, str(int(remaining_minutes)))]
+    start_sandbox_inputs = [
+        InputNameValue(
+            sb_globals.START_SANDBOX_DURATION_PARAM, str(int(remaining_minutes))
+        )
+    ]
     if is_health_check:
         first_service_name = sorted_service_names[0]
         reporter.warn_out("Starting HEALTH CHECK deploy...".format(first_service_name))
@@ -191,7 +252,9 @@ def launch_sandboxes_flow(sandbox, components=None):
                 printOutput=True,
             )
         except Exception as e:
-            exc_msg = "HEALTH CHECK launch for blueprint '{}' FAILED: {}".format(first_service_name, str(e))
+            exc_msg = "HEALTH CHECK launch for blueprint '{}' FAILED: {}".format(
+                first_service_name, str(e)
+            )
             reporter.err_out(exc_msg)
             raise Exception(exc_msg)
 
@@ -213,7 +276,9 @@ def launch_sandboxes_flow(sandbox, components=None):
                 failed_sequential.append(service_name)
                 exc_msg = "Sandbox failed for '{}'".format(service_name)
                 reporter.err_out(exc_msg)
-        failed_extensions = _sync_sandboxes_wrapper(api, res_id, reporter, sorted_service_names)
+        failed_extensions = _sync_sandboxes_wrapper(
+            api, res_id, reporter, sorted_service_names
+        )
         if failed_sequential:
             exc_msg = "Deployments failed for: {}".format(failed_sequential)
             reporter.err_out(exc_msg)
@@ -241,7 +306,9 @@ def launch_sandboxes_flow(sandbox, components=None):
         reporter.err_out(err_msg)
         raise Exception(err_msg)
 
-    failed_extensions = _sync_sandboxes_wrapper(api, res_id, reporter, sorted_service_names)
+    failed_extensions = _sync_sandboxes_wrapper(
+        api, res_id, reporter, sorted_service_names
+    )
     if failed_extensions:
         exc_msg = "Extensions failed for: {}".format(failed_extensions)
         reporter.err_out(exc_msg)

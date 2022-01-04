@@ -25,7 +25,9 @@ def get_reservation_resources_by_family(api, reservation_id, family_name):
     :return:
     """
     resources = get_reservation_resources(api, reservation_id)
-    target_resources = [resource for resource in resources if resource.ResourceFamilyName == family_name]
+    target_resources = [
+        resource for resource in resources if resource.ResourceFamilyName == family_name
+    ]
     return target_resources
 
 
@@ -37,7 +39,9 @@ def get_reservation_resources_by_model(api, reservation_id, model_name):
     :return:
     """
     resources = get_reservation_resources(api, reservation_id)
-    target_resources = [resource for resource in resources if resource.ResourceModelName == model_name]
+    target_resources = [
+        resource for resource in resources if resource.ResourceModelName == model_name
+    ]
     return target_resources
 
 
@@ -56,13 +60,17 @@ def _get_target_attr_obj(api, resource_name, target_attr_name):
 
     # Attribute names with 2nd gen name space (using family or model)
     target_model_attr = "{model}.{attr}".format(model=res_model, attr=target_attr_name)
-    target_family_attr = "{family}.{attr}".format(family=res_family, attr=target_attr_name)
+    target_family_attr = "{family}.{attr}".format(
+        family=res_family, attr=target_attr_name
+    )
 
     # check against all 3 possibilities
     target_res_attr_filter = [
         attr
         for attr in res_details.ResourceAttributes
-        if attr.Name == target_attr_name or attr.Name == target_model_attr or attr.Name == target_family_attr
+        if attr.Name == target_attr_name
+        or attr.Name == target_model_attr
+        or attr.Name == target_family_attr
     ]
     if target_res_attr_filter:
         return target_res_attr_filter[0]
@@ -123,11 +131,15 @@ def get_resources_matching_bool_attr(api, reservation_id, target_attr_name):
     """
     resources = get_reservation_resources(api, reservation_id)
 
-    filtered_resources = [vm for vm in resources if evaluate_boolean_attr(api, vm.Name, target_attr_name)]
+    filtered_resources = [
+        vm for vm in resources if evaluate_boolean_attr(api, vm.Name, target_attr_name)
+    ]
     return filtered_resources
 
 
-def get_resources_matching_attr_value(api, reservation_id, target_attr_name, target_attr_value):
+def get_resources_matching_attr_value(
+    api, reservation_id, target_attr_name, target_attr_value
+):
     """
     get all sandbox resources matching your target boolean flag
     :param CloudShellAPISession api:
@@ -138,7 +150,11 @@ def get_resources_matching_attr_value(api, reservation_id, target_attr_name, tar
     """
     resources = get_reservation_resources(api, reservation_id)
 
-    filtered_resources = [vm for vm in resources if get_resource_attr_val(api, vm.Name, target_attr_name) == target_attr_value]
+    filtered_resources = [
+        vm
+        for vm in resources
+        if get_resource_attr_val(api, vm.Name, target_attr_name) == target_attr_value
+    ]
     return filtered_resources
 
 

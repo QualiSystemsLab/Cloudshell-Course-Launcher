@@ -1,9 +1,11 @@
 from collections import defaultdict
 
-from cloudshell.shell.core.driver_context import (AutoLoadAttribute,
-                                                  AutoLoadDetails,
-                                                  AutoLoadResource,
-                                                  ResourceCommandContext)
+from cloudshell.shell.core.driver_context import (
+    AutoLoadAttribute,
+    AutoLoadDetails,
+    AutoLoadResource,
+    ResourceCommandContext,
+)
 
 
 class LegacyUtils(object):
@@ -16,7 +18,9 @@ class LegacyUtils(object):
         root = self.__create_resource_from_datamodel(model_name, root_name)
         attributes = self.__create_attributes_dict(autoload_details.attributes)
         self.__attach_attributes_to_resource(attributes, "", root)
-        self.__build_sub_resoruces_hierarchy(root, autoload_details.resources, attributes)
+        self.__build_sub_resoruces_hierarchy(
+            root, autoload_details.resources, attributes
+        )
         return root
 
     def __create_resource_from_datamodel(self, model_name, res_name):
@@ -32,34 +36,55 @@ class LegacyUtils(object):
         d = defaultdict(list)
         for resource in sub_resources:
             splitted = resource.relative_address.split("/")
-            parent = "" if len(splitted) == 1 else resource.relative_address.rsplit("/", 1)[0]
+            parent = (
+                ""
+                if len(splitted) == 1
+                else resource.relative_address.rsplit("/", 1)[0]
+            )
             rank = len(splitted)
             d[rank].append((parent, resource))
 
         self.__set_models_hierarchy_recursively(d, 1, root, "", attributes)
 
-    def __set_models_hierarchy_recursively(self, dict, rank, manipulated_resource, resource_relative_addr, attributes):
+    def __set_models_hierarchy_recursively(
+        self, dict, rank, manipulated_resource, resource_relative_addr, attributes
+    ):
         if rank not in dict:  # validate if key exists
             pass
 
         for (parent, resource) in dict[rank]:
             if parent == resource_relative_addr:
-                sub_resource = self.__create_resource_from_datamodel(resource.model.replace(" ", ""), resource.name)
-                self.__attach_attributes_to_resource(attributes, resource.relative_address, sub_resource)
-                manipulated_resource.add_sub_resource(
-                    self.__slice_parent_from_relative_path(parent, resource.relative_address), sub_resource
+                sub_resource = self.__create_resource_from_datamodel(
+                    resource.model.replace(" ", ""), resource.name
                 )
-                self.__set_models_hierarchy_recursively(dict, rank + 1, sub_resource, resource.relative_address, attributes)
+                self.__attach_attributes_to_resource(
+                    attributes, resource.relative_address, sub_resource
+                )
+                manipulated_resource.add_sub_resource(
+                    self.__slice_parent_from_relative_path(
+                        parent, resource.relative_address
+                    ),
+                    sub_resource,
+                )
+                self.__set_models_hierarchy_recursively(
+                    dict, rank + 1, sub_resource, resource.relative_address, attributes
+                )
 
     def __attach_attributes_to_resource(self, attributes, curr_relative_addr, resource):
         for attribute in attributes[curr_relative_addr]:
-            setattr(resource, attribute.attribute_name.lower().replace(" ", "_"), attribute.attribute_value)
+            setattr(
+                resource,
+                attribute.attribute_name.lower().replace(" ", "_"),
+                attribute.attribute_value,
+            )
         del attributes[curr_relative_addr]
 
     def __slice_parent_from_relative_path(self, parent, relative_addr):
         if parent is "":
             return relative_addr
-        return relative_addr[len(parent) + 1 :]  # + 1 because we want to remove the seperator also
+        return relative_addr[
+            len(parent) + 1 :
+        ]  # + 1 because we want to remove the seperator also
 
     def __generate_datamodel_classes_dict(self):
         return dict(self.__collect_generated_classes())
@@ -110,12 +135,19 @@ class SandboxController(object):
             )
             for r in self.resources
         ]
-        attributes = [AutoLoadAttribute(relative_path, a, self.attributes[a]) for a in self.attributes]
+        attributes = [
+            AutoLoadAttribute(relative_path, a, self.attributes[a])
+            for a in self.attributes
+        ]
         autoload_details = AutoLoadDetails(resources, attributes)
         for r in self.resources:
             curr_path = relative_path + "/" + r if relative_path else r
-            curr_auto_load_details = self.resources[r].create_autoload_details(curr_path)
-            autoload_details = self._merge_autoload_details(autoload_details, curr_auto_load_details)
+            curr_auto_load_details = self.resources[r].create_autoload_details(
+                curr_path
+            )
+            autoload_details = self._merge_autoload_details(
+                autoload_details, curr_auto_load_details
+            )
         return autoload_details
 
     def _get_relative_path(self, child_path, parent_path):
@@ -217,7 +249,11 @@ class SandboxController(object):
         """
         :rtype: str
         """
-        return self.attributes["Sandbox Controller.Sandbox Id"] if "Sandbox Controller.Sandbox Id" in self.attributes else None
+        return (
+            self.attributes["Sandbox Controller.Sandbox Id"]
+            if "Sandbox Controller.Sandbox Id" in self.attributes
+            else None
+        )
 
     @sandbox_id.setter
     def sandbox_id(self, value):
