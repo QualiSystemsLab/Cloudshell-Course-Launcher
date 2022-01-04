@@ -43,6 +43,6 @@ repos:
             --max-line-length=127,
             --max-public-methods=32,
             --max-args=11,
-            '--disable=too-few-public-methods,logging-fstring-interpolation,too-many-instance-attributes,no-else-return,too-many-locals,no-self-use,duplicate-code,broad-except,logging-not-lazy,unspecified-encoding, unused-wildcard-import,missing-function-docstring,missing-module-docstring,import-error,wildcard-import,invalid-name,redefined-outer-name,no-name-in-module,missing-class-docstring, unnecessary-pass',
+            '--disable=too-few-public-methods,logging-fstring-interpolation,too-many-instance-attributes,no-else-return,too-many-locals,no-self-use,duplicate-code,broad-except,logging-not-lazy,unspecified-encoding, unused-wildcard-import,missing-function-docstring,missing-module-docstring,import-error,wildcard-import,invalid-name,redefined-outer-name,no-name-in-module,missing-class-docstring, unnecessary-pass, consider-using-f-string',
             '--good-names=ip,rc,eval'
         ]

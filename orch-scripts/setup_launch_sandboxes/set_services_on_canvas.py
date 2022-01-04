@@ -50,52 +50,9 @@ def set_services(api, res_id, reporter, student_list, target_blueprint_name, att
                 exc_msg = "Could add not service. student username: '{}', service alias: '{}'".format(
                     student_name, service_alias
                 )
-                reporter.err_out(exc_msg),
+                reporter.err_out(exc_msg)
                 raise Exception(exc_msg)
             api.SetReservationServicePosition(reservationId=res_id, serviceAlias=service_alias, x=curr_x, y=curr_y)
             attributes_list.pop()
             curr_x += x_offset
         curr_y += y_offset
-
-
-if __name__ == "__main__":
-    import time
-
-    mock_student_name = "demo student A"
-    normalized = replace_illegal_sandbox_name_chars(mock_student_name)
-    LIVE_SANDBOX_ID = "108463c3-028b-4e66-8753-acc1b708069e"
-    session = CloudShellAPISession("localhost", "admin", "admin", "Global")
-    my_list = [
-        "a",
-        "b",
-        "c",
-        "d",
-        "e",
-        "f",
-        "g",
-        "H",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "n",
-        "o",
-        "p",
-        "q",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z",
-    ]
-    set_services(session, LIVE_SANDBOX_ID, my_list, "my bp")
-
-    # clean up test
-    time.sleep(20)
-    all_services = session.GetReservationDetails(LIVE_SANDBOX_ID).ReservationDescription.Services
-    session.RemoveServicesFromReservation(LIVE_SANDBOX_ID, [s.Alias for s in all_services])
