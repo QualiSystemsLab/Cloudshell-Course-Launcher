@@ -2,9 +2,11 @@ import re
 from time import sleep
 
 import SB_GLOBALS
-from cloudshell.api.cloudshell_api import AttributeNameValue, CloudShellAPISession
+from cloudshell.api.cloudshell_api import (AttributeNameValue,
+                                           CloudShellAPISession)
 from helper_code.SandboxReporter import SandboxReporter
-from helper_code.util_helpers import replace_illegal_sandbox_name_chars, sandbox_name_truncater
+from helper_code.util_helpers import (replace_illegal_sandbox_name_chars,
+                                      sandbox_name_truncater)
 
 
 def _get_chunks(input_list, chunk_size):

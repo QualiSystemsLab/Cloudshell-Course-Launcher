@@ -1,6 +1,9 @@
 from collections import defaultdict
 
-from cloudshell.shell.core.driver_context import AutoLoadAttribute, AutoLoadDetails, AutoLoadResource, ResourceCommandContext
+from cloudshell.shell.core.driver_context import (AutoLoadAttribute,
+                                                  AutoLoadDetails,
+                                                  AutoLoadResource,
+                                                  ResourceCommandContext)
 
 
 class LegacyUtils(object):

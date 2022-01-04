@@ -1,7 +1,9 @@
 import time
 
 import SB_GLOBALS as sb_globals
-from cloudshell.api.cloudshell_api import AttributeNameValue, CloudShellAPISession, InputNameValue
+from cloudshell.api.cloudshell_api import (AttributeNameValue,
+                                           CloudShellAPISession,
+                                           InputNameValue)
 from cloudshell.workflow.orchestration.sandbox import Sandbox
 from helper_code.execute_async_helper import execute_commands_async
 from helper_code.is_blueprint_in_domain import is_blueprint_in_domain

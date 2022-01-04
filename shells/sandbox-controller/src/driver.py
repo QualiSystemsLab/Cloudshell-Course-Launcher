@@ -1,22 +1,24 @@
 from time import sleep
 
-from cloudshell.api.cloudshell_api import AttributeNameValue, CloudShellAPISession
+from cloudshell.api.cloudshell_api import (AttributeNameValue,
+                                           CloudShellAPISession)
 from cloudshell.logging.qs_logger import get_qs_logger
-from cloudshell.shell.core.driver_context import (
-    AutoLoadAttribute,
-    AutoLoadDetails,
-    AutoLoadResource,
-    CancellationContext,
-    InitCommandContext,
-    ResourceCommandContext,
-)
-from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
-from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionContext
+from cloudshell.shell.core.driver_context import (AutoLoadAttribute,
+                                                  AutoLoadDetails,
+                                                  AutoLoadResource,
+                                                  CancellationContext,
+                                                  InitCommandContext,
+                                                  ResourceCommandContext)
+from cloudshell.shell.core.resource_driver_interface import \
+    ResourceDriverInterface
+from cloudshell.shell.core.session.cloudshell_session import \
+    CloudShellSessionContext
 from data_model import *  # run 'shellfoundry generate' to generate data model classes
 from helper_code.SandboxReporter import SandboxReporter
 from helper_code.util_helpers import sandbox_name_truncater
 from parse_global_inputs import get_global_input_request_from_semicolon_sep_str
-from poll_sandbox import poll_setup_for_provisioning_status, poll_teardown_for_completion_status
+from poll_sandbox import (poll_setup_for_provisioning_status,
+                          poll_teardown_for_completion_status)
 
 
 class SandboxControllerDriver(ResourceDriverInterface):

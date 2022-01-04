@@ -1,5 +1,6 @@
 import SB_GLOBALS
-from cloudshell.api.cloudshell_api import AttributeNameValue, CloudShellAPISession
+from cloudshell.api.cloudshell_api import (AttributeNameValue,
+                                           CloudShellAPISession)
 
 
 def _get_chunks(input_list, chunk_size):

@@ -1,14 +1,13 @@
 import cloudshell.helpers.scripts.cloudshell_scripts_helpers as sh
 import driver as my_driver
-from cloudshell.helpers.scripts.cloudshell_dev_helpers import attach_to_cloudshell_as
-from cloudshell.shell.core.driver_context import (
-    ConnectivityContext,
-    Connector,
-    InitCommandContext,
-    ReservationContextDetails,
-    ResourceCommandContext,
-    ResourceContextDetails,
-)
+from cloudshell.helpers.scripts.cloudshell_dev_helpers import \
+    attach_to_cloudshell_as
+from cloudshell.shell.core.driver_context import (ConnectivityContext,
+                                                  Connector,
+                                                  InitCommandContext,
+                                                  ReservationContextDetails,
+                                                  ResourceCommandContext,
+                                                  ResourceContextDetails)
 
 LIVE_SANDBOX_ID = "1f42c89b-c914-4113-826c-afc00b195771"
 SERVICE_NAME = "Sandbox Controller"
