@@ -1,4 +1,4 @@
-# Blueprints CourseLauncher
+# Cloudshell Course Launcher
 This project is an administrative blueprint designed to deploy sandboxes concurrently from a "controller" blueprint. 
 Each sandbox is represented in the blueprint as a cloudshell service. Controller sandbox teardown ends all the child blueprints.
 
@@ -55,5 +55,4 @@ NOTE: Both packages utilize the same orchestration scripts, they expose differen
 7. Sandbox Global Inputs (Optional)
     - Global inputs to be forwarded to all children sandboxes. 
     - Input is a semicolon separated key pair chain (key1, val1;key2,val2;key3,val3)
-    - no constraints on inputs 
-"# Cloudshell-Course-Launcher" 
+    - no constraints on inputs

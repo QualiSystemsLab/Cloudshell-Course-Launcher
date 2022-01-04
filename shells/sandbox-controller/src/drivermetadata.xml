@@ -1,0 +1,54 @@
+<Driver Description="Describe the purpose of your CloudShell shell" MainClass="driver.SandboxControllerDriver"
+        Name="SandboxControllerDriver" Version="1.0.0" PythonVersion="3">
+    <Layout>
+        <Category Name="Hidden Commands">
+            <Command Description="Start Approval Flow" DisplayName="MC Approval Request" Name="mc_approval_request"/>
+            <Command Description="Send notification to admin in case of failure" DisplayName="MC Error Alert"
+                     Name="mc_error_alert">
+                <Parameters>
+                    <Parameter DefaultValue="Error Has Occurred, check_sandbox"
+                               Description="custom error message to forward to mail"
+                               DisplayName="Error Message" Mandatory="False" Name="error_msg" Type="String"/>
+                </Parameters>
+            </Command>
+            <Command Name="make_extension_request" DisplayName="Make Extension Request"
+                     Description="send mail to admin to approve time extension"/>
+            <Command Name="start_admin_service" DisplayName="Start Admin Service"
+                     Description="dummy command to trigger virtual environment"/>
+        </Category>
+        <Category Name="Start / End">
+            <Command Description="Start blueprint and poll for setup completion" DisplayName="Start Sandbox"
+                     Name="start_sandbox">
+                <Parameters>
+                    <Parameter DefaultValue="120"
+                               Description="Total minutes of requested sandbox"
+                               DisplayName="Duration Minutes" Mandatory="True" Name="duration_minutes" Type="String"/>
+                </Parameters>
+            </Command>
+            <Command Description="End Sandbox and Poll for teardown completion" DisplayName="End Sandbox"
+                     Name="end_sandbox">
+            </Command>
+        </Category>
+        <Category Name="Extend">
+            <Command Description="Extend sandbox for specified duration" DisplayName="Extend Sandbox"
+                     Name="extend_sandbox">
+                <Parameters>
+                    <Parameter DefaultValue="120"
+                               Description="Total minutes to extend sandbox"
+                               DisplayName="Duration Minutes" Mandatory="True" Name="duration_minutes" Type="String"/>
+                </Parameters>
+            </Command>
+            <Command Description="If parent sandbox has more time than child, synchronize child sandbox time"
+                     DisplayName="Sync Remaining Time"
+                     Name="sync_remaining_time">
+            </Command>
+        </Category>
+        <Category Name="Additional Commands">
+            <Command Description="Reads permitted users attribute value and sends api command to add users"
+                     DisplayName="Update Permitted Users"
+                     Name="update_permitted_users">
+            </Command>
+        </Category>
+    </Layout>
+</Driver>
+

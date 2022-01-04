@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TopologyInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Details Name="Course Launcher Staggered Deploy" Alias="Course Launcher Staggered Deploy" Driver="Python Setup &amp; Teardown" SetupDuration="45" TeardownDuration="45" Public="false" ImageName="Course Launcher Staggered Deploy.jpg" DefaultDuration="120" EnableSandboxSave="false" AbstractOnSavePolicy="Default" IsPersistentSandbox="false">
+    <Description>Blueprint with preconfigured setup &amp; teardown processes.Deploys Apps and resolves connections on Setup, and deletes App VMs on Teardown</Description>
+    <Categories>
+      <Category Name="Course Launcher" SubCategory="" />
+    </Categories>
+    <Scripts>
+      <Script Name="teardown_remove_sandboxes" />
+      <Script Name="setup_launch_sandboxes" />
+      <Script Name="extend_sandboxes" />
+    </Scripts>
+    <Diagram Zoom="1.05" NodeSize="Medium" />
+  </Details>
+  <Apps />
+  <Inputs>
+    <GlobalInput Name="Blueprint Course" Description="valid blueprint name" Type="String" />
+    <GlobalInput Name="Cloudshell Group" Description="Must be Valid Cloudshell Group. Group also needs domain permissions." Type="String" />
+    <GlobalInput Name="Participants List" Description="comma separated list of partipants (must be valid cloudshell users)" Type="String" />
+    <GlobalInput Name="Deploy Sandboxes Concurrently" DefaultValue="True" Description="Boolean" Type="Lookup">
+      <PossibleValues>
+        <Value>True</Value>
+        <Value>False</Value>
+      </PossibleValues>
+    </GlobalInput>
+    <GlobalInput Name="Concurrent Deploy Limit" DefaultValue="3" Description="How many concurrent sandboxes to deploy at once" Type="Lookup">
+      <PossibleValues>
+        <Value>False</Value>
+        <Value>2</Value>
+        <Value>3</Value>
+        <Value>4</Value>
+        <Value>5</Value>
+        <Value>6</Value>
+        <Value>7</Value>
+        <Value>8</Value>
+        <Value>9</Value>
+        <Value>10</Value>
+      </PossibleValues>
+    </GlobalInput>
+    <GlobalInput Name="Health Check First Sandbox" DefaultValue="True" Description="Boolean. Check first sandbox and stop if fails." Type="Lookup">
+      <PossibleValues>
+        <Value>True</Value>
+        <Value>False</Value>
+      </PossibleValues>
+    </GlobalInput>
+    <GlobalInput Name="Sandbox Global Inputs" Description="key-value pairs to be forwarded to global inputs. Semicolon joined pairs. (key1,val1;key2,val2)" Type="String" />
+  </Inputs>
+</TopologyInfo>

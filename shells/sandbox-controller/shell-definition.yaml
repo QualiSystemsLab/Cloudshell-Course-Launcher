@@ -1,0 +1,56 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+metadata:
+  template_name: Sandbox Controller
+  template_author: Anonymous
+  template_version: 0.1.0
+  template_icon: shell-icon.png
+
+description: >
+  TOSCA based service shell
+
+imports:
+  - cloudshell_standard: cloudshell_admin_only_custom_service_standard_1_0_0.yaml
+
+node_types:
+
+  vendor.resource.Sandbox Controller:
+    derived_from: cloudshell.nodes.AdminOnlyCustomService
+    properties:
+      Blueprint Name:
+        description: name of blueprint
+        type: string
+        tags: [user_input]
+      Sandbox Owner:
+        description: owner of sandbox
+        type: string
+        tags: [readonly_to_users]
+      Permitted Users:
+        description: comma separated list of permitted users. Users MUST have appropriate domain permissions.
+        type: string
+        tags: [user_input]
+      Sandbox Id:
+        description: UUID of sandbox
+        type: string
+        tags: [readonly_to_users]
+      Global Inputs:
+        description: pass in semicolon separated string of key value pairs (input1,asdf;input2,val2;input 3,val3)
+        type: string
+        tags: [user_input]
+      Email Notifications:
+        description: email notifications
+        type: string
+        default: True
+        tags: [user_input]
+        constraints:
+          - valid_values: [True, False]
+    #  Service Categories:
+    #    type: list
+    #    default: [My Category 1, My Category 2]    
+    artifacts:
+      icon:
+        file: shell-icon.png
+        type: tosca.artifacts.File
+      driver:
+        file: SandboxControllerDriver.zip
+        type: tosca.artifacts.File

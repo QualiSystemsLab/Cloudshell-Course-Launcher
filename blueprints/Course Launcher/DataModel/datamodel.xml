@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataModelInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.qualisystems.com/ResourceManagement/DataModelSchema.xsd">
+  <Attributes />
+  <ResourceFamilies />
+  <DriverDescriptors>
+    <DriverDescriptor Name="Python Setup &amp; Teardown" Description="This driver is used for running Python scripts in the environment setup and teardown. To use this driver, make sure you select a suitable setup and/or teardown script." DriverType="TestShellDriver" />
+  </DriverDescriptors>
+  <ScriptDescriptors>
+    <ScriptDescriptor Name="teardown_remove_sandboxes" Description="Trigger end sandbox on all child sandboxes" CategoryName="Hidden Commands" Version="2.0" Alias="Teardown script" Visibility="Everyone" ExecutionEnvironmentType="1">
+      <ScriptInputs />
+    </ScriptDescriptor>
+    <ScriptDescriptor Name="setup_launch_sandboxes" Description="Launch sandboxes concurrently from admin blueprint" CategoryName="Hidden Commands" Version="2.0" Alias="Setup script" Visibility="Everyone" ExecutionEnvironmentType="1">
+      <ScriptInputs />
+    </ScriptDescriptor>
+    <ScriptDescriptor Name="extend_sandboxes" Description="Extend time in parent admin sandbox and sync time with child sandboxes" Version="2.0" Alias="Extend Sandboxes" Visibility="Everyone" ExecutionEnvironmentType="1">
+      <ScriptInputs>
+        <ScriptInput Name="duration_minutes" DefaultValue="30" Description="minutes to extend sandbox" />
+      </ScriptInputs>
+    </ScriptDescriptor>
+  </ScriptDescriptors>
+</DataModelInfo>
