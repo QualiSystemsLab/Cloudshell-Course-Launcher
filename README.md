@@ -2,14 +2,14 @@
 This project is an administrative blueprint designed to deploy sandboxes concurrently from a "controller" blueprint. 
 Each sandbox is represented in the blueprint as a cloudshell service. Controller sandbox teardown ends all the child blueprints.
 
-### Set up
-- install Sandbox Controller Shell
-- import Blueprint Packages
-- Set setup scripts to python3 (if server not configured to upload new scripts tot py3 by default)
+## Installation
+- install "Sandbox Controller" Shell as 2G shell
+- import Blueprint Packages as 1G Quali Package with "import package" button
+- Configure setup scripts to python3 (if server not configured to upload new scripts tot py3 by default)
 - Place Launcher blueprint in same domain as courses to be launched
     - course instructor becomes sandbox owner of deployed child sandboxes
     - students added as permitted users
-- Add UniversalSettings key to enable web link to child sandbox from service 
+- Add UniversalSettings key to enable web link to child sandbox from servicess 
 
 UniversalSettings Path:
 C:\ProgramData\QualiSystems\Settings\Global\ServerUniversalSettings.xml
@@ -18,23 +18,25 @@ C:\ProgramData\QualiSystems\Settings\Global\ServerUniversalSettings.xml
  ``` 
 - replace IP / hostname with Cloudshell server
 
-### Included Orchestration Scripts
-1. Setup script to deploy sandboxes
-2. Teardown to clean up sandboxes
-3. Extend Sandbox Blueprint Command
-   - extend and sync time of all child sandboxes 
-
-### Included Blueprint Packages
+## Included Blueprint Packages
  1. "Course Launcher"
     - Basic version to deploy sandboxes in parallel
     - health check first sandbox for failed teardown
  2. "Staggered Deploy" 
     - Version with additional inputs to set staggered deployments 
     - useful for vcenter private clouds to distribute deployment load over time
-
+    
 NOTE: Both packages utilize the same orchestration scripts, they expose different interface global inputs
 
-### Global Inputs on Blueprint
+## Included Orchestration Scripts
+(Included in Blueprint package)
+1. Setup script to deploy sandboxes
+2. Teardown to clean up sandboxes
+3. Extend Sandbox Blueprint Command
+   - extend and sync time of all child sandboxes 
+   
+## Global Inputs on Blueprint
+(Included in Blueprint package)
 1. Blueprint Course (Required)
     - name of blueprint to be launched
 2. Participants List (Required, if "Cloudshell Group" input is blank)
