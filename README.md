@@ -1,6 +1,7 @@
 # Cloudshell Course Launcher
-This project is an administrative blueprint designed to deploy sandboxes concurrently from a "controller" blueprint. 
-Each sandbox is represented in the blueprint as a cloudshell service. Controller sandbox teardown ends all the child blueprints.
+This project is an administrative blueprint designed to deploy sandboxes concurrently from a "controller" sandbox. 
+Each sandbox is represented in the admin sandbox as a cloudshell service. 
+Admin sandbox teardown triggers teardown on all the child sandboxes.
 
 ## Installation
 - install "Sandbox Controller" Shell as 2G shell
