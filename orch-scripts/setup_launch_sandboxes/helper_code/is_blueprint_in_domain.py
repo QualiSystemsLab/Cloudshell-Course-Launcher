@@ -15,7 +15,5 @@ def is_blueprint_in_domain(api, bp_name):
 
 if __name__ == "__main__":
     BP_NAME = "end users bp"
-    api = CloudShellAPISession(
-        host="localhost", username="admin", password="admin", domain="Global"
-    )
+    api = CloudShellAPISession(host="localhost", username="admin", password="admin", domain="Global")
     print(is_blueprint_in_domain(api, BP_NAME))

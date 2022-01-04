@@ -1,14 +1,7 @@
 import cloudshell.helpers.scripts.cloudshell_scripts_helpers as sh
 import driver as my_driver
 from cloudshell.helpers.scripts.cloudshell_dev_helpers import attach_to_cloudshell_as
-from cloudshell.shell.core.driver_context import (
-    ConnectivityContext,
-    Connector,
-    InitCommandContext,
-    ReservationContextDetails,
-    ResourceCommandContext,
-    ResourceContextDetails,
-)
+from cloudshell.shell.core.driver_context import ConnectivityContext, ReservationContextDetails, ResourceCommandContext
 
 LIVE_SANDBOX_ID = "1f42c89b-c914-4113-826c-afc00b195771"
 SERVICE_NAME = "Sandbox Controller"
@@ -24,7 +17,7 @@ attach_to_cloudshell_as(
 )
 
 session = sh.get_api_session()
-token = session.token_id
+token = session.authentication.xmlrpc_token
 
 resource_context_details = sh.get_resource_context_details()
 reservation_context_details = sh.get_reservation_context_details()

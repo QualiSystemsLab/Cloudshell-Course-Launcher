@@ -1,11 +1,7 @@
 import time
 
 import SB_GLOBALS as sb_globals
-from cloudshell.api.cloudshell_api import (
-    AttributeNameValue,
-    CloudShellAPISession,
-    InputNameValue,
-)
+from cloudshell.api.cloudshell_api import CloudShellAPISession
 from cloudshell.workflow.orchestration.sandbox import Sandbox
 from helper_code.execute_async_helper import execute_commands_async
 from helper_code.SandboxReporter import SandboxReporter
@@ -48,30 +44,20 @@ def extend_sandboxes_flow(sandbox, components=None):
     res_id = sandbox.id
     logger = sandbox.logger
     reporter = SandboxReporter(api, res_id, logger)
-    duration_minutes_input = sandbox.get_user_param(
-        sb_globals.EXTEND_SANDBOXES_DURATION_PARAM
-    )
+    duration_minutes_input = sandbox.get_user_param(sb_globals.EXTEND_SANDBOXES_DURATION_PARAM)
     duration_minutes = int(duration_minutes_input)
 
-    reporter.warn_out(
-        "Extending Parent Launcher Sandbox {} minutes".format(duration_minutes)
-    )
-    extend_parent_res = api.ExtendReservation(
-        reservationId=res_id, minutesToAdd=duration_minutes
-    )
+    reporter.warn_out("Extending Parent Launcher Sandbox {} minutes".format(duration_minutes))
+    extend_parent_res = api.ExtendReservation(reservationId=res_id, minutesToAdd=duration_minutes)
     time.sleep(10)
 
     # GET CURRENT SERVICES ON CANVAS
     all_services = api.GetReservationDetails(res_id).ReservationDescription.Services
-    curr_services = [
-        s for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL
-    ]
+    curr_services = [s for s in all_services if s.ServiceName == sb_globals.SANDBOX_CONTROLLER_MODEL]
 
     def _is_sb_id(s):
         attrs = s.Attributes
-        sb_id_val = [attr for attr in attrs if attr.Name == sb_globals.SANDBOX_ID_ATTR][
-            0
-        ].Value
+        sb_id_val = [attr for attr in attrs if attr.Name == sb_globals.SANDBOX_ID_ATTR][0].Value
         if sb_id_val:
             return True
         else:
@@ -82,9 +68,7 @@ def extend_sandboxes_flow(sandbox, components=None):
 
     # ASYNC flow
     reporter.warn_out("Starting extension syncing with children sandboxes...")
-    failed_extensions = _sync_sandboxes_wrapper(
-        api, res_id, reporter, sorted_service_names
-    )
+    failed_extensions = _sync_sandboxes_wrapper(api, res_id, reporter, sorted_service_names)
     if failed_extensions:
         exc_msg = "Extensions failed for: {}".format(failed_extensions)
         reporter.err_out(exc_msg)

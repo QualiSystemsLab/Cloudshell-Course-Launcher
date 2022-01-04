@@ -4,9 +4,7 @@ from time import time
 from cloudshell.api.cloudshell_api import CloudShellAPISession
 from retrying import RetryError, retry
 
-PollingResults = namedtuple(
-    "PollingResults", ["sandbox_provisioning_status", "elapsed_polling_minutes"]
-)
+PollingResults = namedtuple("PollingResults", ["sandbox_provisioning_status", "elapsed_polling_minutes"])
 
 
 class PollSandboxTimeoutError(Exception):
@@ -37,9 +35,7 @@ def _validate_teardown_status(status_data):
     return True
 
 
-def _poll_sandbox_for_status(
-    api, res_id, validation_func, max_polling_minutes=45, polling_frequency_seconds=10
-):
+def _poll_sandbox_for_status(api, res_id, validation_func, max_polling_minutes=45, polling_frequency_seconds=10):
     """
     poll setup and teardown for status
     :param CloudShellAPISession api:
@@ -69,9 +65,7 @@ def _poll_sandbox_for_status(
     try:
         sandbox_status, provisioning_status = _poll_sandbox()
     except RetryError:
-        exc_msg = "Polling '{}' timed out after {} minutes".format(
-            sandbox_name, str(max_polling_minutes)
-        )
+        exc_msg = "Polling '{}' timed out after {} minutes".format(sandbox_name, str(max_polling_minutes))
         raise PollSandboxTimeoutError(exc_msg)
 
     elapsed_seconds = time() - start_time
@@ -84,9 +78,7 @@ def _poll_sandbox_for_status(
     )
 
 
-def poll_setup_for_provisioning_status(
-    api, res_id, max_polling_minutes=45, polling_frequency_seconds=10
-):
+def poll_setup_for_provisioning_status(api, res_id, max_polling_minutes=45, polling_frequency_seconds=10):
     """
     wrapper for polling setup
     :param CloudShellAPISession api:
@@ -105,9 +97,7 @@ def poll_setup_for_provisioning_status(
     )
 
 
-def poll_teardown_for_completion_status(
-    api, res_id, max_polling_minutes=45, polling_frequency_seconds=10
-):
+def poll_teardown_for_completion_status(api, res_id, max_polling_minutes=45, polling_frequency_seconds=10):
     """
     wrapper for polling teardown
     :param CloudShellAPISession api:

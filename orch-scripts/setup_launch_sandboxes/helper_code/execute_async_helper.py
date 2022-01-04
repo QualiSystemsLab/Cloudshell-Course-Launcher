@@ -4,9 +4,7 @@ from cloudshell.api.cloudshell_api import CloudShellAPISession, InputNameValue
 
 
 # Define the function which will be executed within the ThreadPool
-def _execute_command_wrapper(
-    api, res_id, target_name, target_type, command_name, command_inputs=None
-):
+def _execute_command_wrapper(api, res_id, target_name, target_type, command_name, command_inputs=None):
     """
     function to be passed to threading implementation
     :param CloudShellAPISession api:
@@ -50,9 +48,7 @@ def execute_commands_async(
     :param int max_thread_count:
     :return:
     """
-    max_thread_count = (
-        max_thread_count if max_thread_count else len(target_components_list)
-    )
+    max_thread_count = max_thread_count if max_thread_count else len(target_components_list)
     thread_pool = ThreadPool(processes=max_thread_count)
 
     async_results = []
@@ -65,9 +61,7 @@ def execute_commands_async(
             command_name,
             command_inputs,
         )
-        async_result = thread_pool.apply_async(
-            _execute_command_wrapper, execute_command_tuple_inputs
-        )
+        async_result = thread_pool.apply_async(_execute_command_wrapper, execute_command_tuple_inputs)
         async_results.append((target_name, async_result))
     thread_pool.close()
     thread_pool.join()
@@ -94,9 +88,7 @@ if __name__ == "__main__":
     command_inputs = [InputNameValue("param1", "val1")]
     max_thread_count = 0
 
-    api = CloudShellAPISession(
-        host="localhost", username="admin", password="admin", domain="localhost"
-    )
+    api = CloudShellAPISession(host="localhost", username="admin", password="admin", domain="localhost")
 
     my_success_responses, my_exception_responses = execute_commands_async(
         api=api,
